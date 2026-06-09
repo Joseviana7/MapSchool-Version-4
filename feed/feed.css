@@ -1,0 +1,129 @@
+*{
+    box-sizing: border-box;
+}
+
+body{
+    margin: 0;
+    background-color: rgb(255, 20, 98);
+    font-family: Arial, Helvetica, sans-serif;
+    color: #fff;
+    text-align: center;
+}
+
+.topo{
+    background-image: linear-gradient(rgb(57, 83, 83), rgb(255, 20, 98));
+    width: 100%;
+    padding: 18px 12px;
+}
+
+h1{
+    display: inline-block;
+    color: rgb(255, 236, 249);
+    font-size: 40px;
+    margin-left: 20px;
+    vertical-align: middle;
+}
+
+.voltar{
+    color: rgb(255, 241, 251);
+    float: right;
+    text-decoration: none;
+    margin-right: 40px;
+    font-size: 18px;
+    line-height: 40px;
+}
+.voltar:hover{
+    border-bottom: 2px solid rgba(0,0,0,0.12);
+}
+
+
+.itel, .ipil, .imel, .imcl, .mutu, .imne, .alda{
+    display: inline-block;
+    vertical-align: top;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2), 0 6px 20px rgba(0,0,0,0.19);
+    border-radius: 10px;
+    background-color: #fff;
+    width: 259px;
+    height: 310px;
+    margin: 24px 14px; 
+    text-align: left;
+    transition: transform .12s ease-in-out;
+    overflow: hidden;
+}
+.itel:hover, .ipil:hover, .imel:hover, .imcl:hover, .mutu:hover, .imne:hover, .alda:hover{
+    transform: scale(1.02);
+}
+
+.itel1, .ipil1, .imel1, .imcl1, .mutu1, .imne1, .alda1{
+    text-decoration: none;
+    color: inherit;
+    display: block; 
+    padding: 12px;
+}
+
+.itel1 h2, .ipil1 h2, .imel1 h2, .imcl1 h2, .mutu1 h2, .imne1 h2, .alda1 h2{
+    color: #222;
+    margin: 8px 0 6px;
+    font-size: 18px;
+}
+.itel1 .p1, .ipil1 .p1, .imel1 .p1, .imcl1 .p1, .mutu1 .p1, .imne1 .p1, .alda1 .p1{
+    color: #4b4b4b;
+    margin: 0 0 10px;
+    font-size: 14px;
+}
+
+.imgitel, .imgipil, .imgimel, .imgimcl, .imgmutu, .imgimne, .imgalda{
+    border-top-left-radius: 10px;
+    border-top-right-radius: 10px;
+    height: 200px;
+    width: 100%;
+    display: block;
+    object-fit: cover;
+}
+
+h2, .p1{ text-align: center; }
+
+@media screen and (min-width: 1200px){
+    .itel, .ipil, .imel, .imcl, .mutu, .imne, .alda{
+        width: 280px;
+        height: 330px;
+        margin: 28px;
+    }
+}
+
+@media screen and (max-width: 900px){
+    .itel, .ipil, .imel, .imcl, .mutu, .imne, .alda{
+        width: 45%;
+        height: auto;
+        margin: 18px 8px;
+    }
+    .imgitel, .imgipil, .imgimel, .imgimcl, .imgmutu, .imgimne, .imgalda{
+        height: 160px;
+    }
+}
+
+@media screen and (max-width:600px){
+    .voltar{ 
+        display: inline-block; 
+        position: relative;
+        top: 2070px;
+        padding: 20px, 40px;
+        border: 2px groove blue;
+        border-radius: 20px;
+        background-color:blue;
+    }
+    h1{ font-size: 30px; }
+    .itel, .ipil, .imel, .imcl, .mutu, .imne, .alda{
+        display: block;
+        width: calc(100% - 40px);
+        margin: 12px auto;
+        height: auto;
+    }
+    .imgitel, .imgipil, .imgimel, .imgimcl, .imgmutu, .imgimne, .imgalda{
+        height: 180px;
+    }
+
+    .alda{
+        margin-bottom:150px;
+    }
+}

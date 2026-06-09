@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MapSchool — Rankings</title>
+  <link rel="shortcut icon" href="img/8216289.png" type="image/x-icon">
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+    :root{--purple:#7c3aed;--pink:#db2777;--pink-soft:#f472b6;--glass:rgba(255,255,255,0.08);--glass-b:rgba(255,255,255,0.16);}
+    body{min-height:100vh;font-family:Arial,Helvetica,sans-serif;color:#fff;
+      background:linear-gradient(145deg,#0f172a 0%,#1e1b4b 35%,#4c1d95 65%,#831843 100%);
+      background-attachment:fixed;overflow-x:hidden;}
+    .blob{position:fixed;border-radius:50%;filter:blur(80px);opacity:0.2;pointer-events:none;z-index:0;}
+    .blob-1{width:500px;height:500px;background:#7c3aed;top:-100px;left:-100px;}
+    .blob-2{width:400px;height:400px;background:#db2777;bottom:-80px;right:-80px;}
+    header{position:relative;z-index:10;display:flex;align-items:center;justify-content:space-between;padding:22px 32px;}
+    .logo{font-weight:900;font-size:1.3rem;letter-spacing:4px;color:#fff;text-decoration:none;}
+    .logo span{color:var(--pink-soft);}
+    nav a{color:rgba(255,255,255,0.7);text-decoration:none;font-size:0.88rem;font-weight:bold;
+      padding:8px 18px;border:1px solid rgba(255,255,255,0.2);border-radius:999px;transition:all 0.2s;margin-left:8px;}
+    nav a:hover,nav a.active{color:#fff;border-color:var(--pink-soft);background:rgba(244,114,182,0.1);}
+
+    .page-hero{position:relative;z-index:5;padding:60px 32px 40px;max-width:1100px;margin:0 auto;}
+    .hero-badge{display:inline-block;font-size:0.72rem;font-weight:bold;letter-spacing:2px;
+      text-transform:uppercase;color:var(--pink-soft);border:1px solid rgba(244,114,182,0.4);
+      border-radius:999px;padding:5px 16px;margin-bottom:20px;}
+    h1{font-size:clamp(2rem,5vw,3.5rem);font-weight:900;line-height:1.1;}
+    h1 span{color:var(--pink-soft);}
+    .sub{margin-top:12px;color:rgba(255,255,255,0.5);font-size:0.95rem;}
+
+    .tabs{position:relative;z-index:5;max-width:1100px;margin:0 auto;padding:0 32px 24px;display:flex;gap:10px;}
+    .tab{padding:9px 22px;border-radius:999px;border:1px solid rgba(255,255,255,0.18);
+      color:rgba(255,255,255,0.55);background:none;cursor:pointer;font-family:inherit;font-size:0.88rem;font-weight:bold;transition:all 0.2s;}
+    .tab.active,.tab:hover{background:rgba(244,114,182,0.12);border-color:var(--pink-soft);color:var(--pink-soft);}
+
+    .rank-list{position:relative;z-index:5;max-width:900px;margin:0 auto;padding:0 32px 60px;}
+    .rank-item{display:flex;align-items:center;gap:18px;
+      background:var(--glass);border:1px solid rgba(255,255,255,0.1);
+      border-radius:20px;padding:20px 24px;margin-bottom:14px;
+      backdrop-filter:blur(12px);transition:border-color 0.2s,transform 0.15s;
+      text-decoration:none;color:#fff;}
+    .rank-item:hover{transform:translateX(4px);border-color:rgba(244,114,182,0.35);}
+    .rank-item:nth-child(1){border-color:rgba(255,215,0,0.35);background:rgba(255,215,0,0.06);}
+    .rank-item:nth-child(2){border-color:rgba(192,192,192,0.35);background:rgba(192,192,192,0.05);}
+    .rank-item:nth-child(3){border-color:rgba(205,127,50,0.35);background:rgba(205,127,50,0.05);}
+    .rank-pos{font-size:1.5rem;font-weight:900;min-width:38px;color:rgba(255,255,255,0.25);}
+    .rank-item:nth-child(1) .rank-pos{color:#ffd700;}
+    .rank-item:nth-child(2) .rank-pos{color:#c0c0c0;}
+    .rank-item:nth-child(3) .rank-pos{color:#cd7f32;}
+    .rank-info{flex:1;}
+    .rank-sigla{font-weight:900;font-size:1.1rem;color:var(--pink-soft);}
+    .rank-nome{font-size:0.88rem;color:rgba(255,255,255,0.6);margin-top:2px;}
+    .rank-prov{font-size:0.75rem;color:rgba(255,255,255,0.35);margin-top:4px;}
+    .rank-cursos{font-size:0.72rem;color:rgba(255,255,255,0.3);margin-top:4px;}
+    .rank-score-wrap{text-align:right;}
+    .rank-score-num{font-size:1.8rem;font-weight:900;background:linear-gradient(135deg,#c4b5fd,#f472b6);-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+    .rank-score-bar{height:4px;border-radius:2px;background:linear-gradient(90deg,var(--purple),var(--pink));margin-top:6px;min-width:80px;}
+    .rank-tag{display:inline-block;font-size:0.68rem;letter-spacing:1px;text-transform:uppercase;
+      color:rgba(244,114,182,0.7);border:1px solid rgba(244,114,182,0.25);border-radius:999px;padding:2px 10px;margin-top:6px;}
+
+    @media(max-width:600px){
+      header{padding:16px 20px;}
+      .page-hero,.rank-list{padding-left:20px;padding-right:20px;}
+      .tabs{padding:0 20px 20px;}
+    }
+  </style>
+</head>
+<body>
+  <div class="blob blob-1"></div>
+  <div class="blob blob-2"></div>
+
+  <header>
+    <a class="logo" href="index.html">MAP<span>SCHOOL</span></a>
+    <nav>
+      <a href="index.html">Início</a>
+      <a href="rankings.html" class="active">Rankings</a>
+      <a href="sobre/sobre.html">Sobre</a>
+    </nav>
+  </header>
+
+  <div class="page-hero">
+    <div class="hero-badge">Rankings Angola 2025</div>
+    <h1>Melhores <span>Instituições</span></h1>
+    <p class="sub">Classificação baseada em oferta académica, infraestrutura e reconhecimento nacional</p>
+  </div>
+
+  <div class="tabs">
+    <button class="tab active" data-tab="all">Todas</button>
+    <button class="tab" data-tab="universidade">Universidades</button>
+    <button class="tab" data-tab="escola">Escolas/Institutos</button>
+  </div>
+
+  <div class="rank-list" id="rank-list"></div>
+
+  <script src="data.js"></script>
+  <script>
+    let currentTab = 'all';
+    function render() {
+      const tipo = currentTab === 'all' ? '' : currentTab;
+      const lista = getTopRanking(tipo, 30);
+      document.getElementById('rank-list').innerHTML = lista.map((e,i) => `
+        <a class="rank-item" href="${e.url||'#'}">
+          <div class="rank-pos">${i+1}</div>
+          <div class="rank-info">
+            <div class="rank-sigla">${e.sigla}</div>
+            <div class="rank-nome">${e.nome}</div>
+            <div class="rank-prov"> ${e.provincia}</div>
+            <div class="rank-cursos">${e.cursos.slice(0,3).join(' · ')}</div>
+            <span class="rank-tag">${e.area}</span>
+          </div>
+          <div class="rank-score-wrap">
+            <div class="rank-score-num">${e.ranking}</div>
+            <div class="rank-score-bar" style="width:${e.ranking}%"></div>
+          </div>
+        </a>`).join('');
+    }
+    document.querySelectorAll('.tab').forEach(t => {
+      t.addEventListener('click', () => {
+        document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));
+        t.classList.add('active');
+        currentTab = t.dataset.tab;
+        render();
+      });
+    });
+    render();
+  </script>
+</body>
+</html>

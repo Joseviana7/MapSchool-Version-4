@@ -1,0 +1,506 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MapSchool</title>
+  <link rel="shortcut icon" href="img/8216289.png" type="image/x-icon">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --purple: #7c3aed; --pink: #db2777; --pink-soft: #f472b6;
+      --glass: rgba(255,255,255,0.08); --glass-b: rgba(255,255,255,0.16);
+    }
+    body { min-height:100vh; font-family:Arial,Helvetica,sans-serif; color:#fff;
+      background:linear-gradient(145deg,#0f172a 0%,#1e1b4b 35%,#4c1d95 65%,#831843 100%);
+      background-attachment:fixed; overflow-x:hidden; }
+    .blob { position:fixed; border-radius:50%; filter:blur(80px); opacity:0.22; pointer-events:none; z-index:0; animation:drift 12s ease-in-out infinite alternate; }
+    .blob-1 { width:500px;height:500px;background:#7c3aed;top:-100px;left:-100px; }
+    .blob-2 { width:400px;height:400px;background:#db2777;bottom:-80px;right:-80px;animation-delay:-4s; }
+    .blob-3 { width:300px;height:300px;background:#6d28d9;top:40%;left:60%;animation-delay:-8s; }
+    @keyframes drift { from{transform:translate(0,0) scale(1);}to{transform:translate(30px,20px) scale(1.08);} }
+
+    header { position:relative;z-index:10;display:flex;align-items:center;justify-content:space-between;padding:22px 32px; }
+    .logo { font-weight:900;font-size:1.3rem;letter-spacing:4px;color:#fff;text-decoration:none; }
+    .logo span { color:var(--pink-soft); }
+    nav { display:flex;gap:8px;flex-wrap:wrap; }
+    nav a { color:rgba(255,255,255,0.7);text-decoration:none;font-size:0.88rem;font-weight:bold;
+      padding:8px 18px;border:1px solid rgba(255,255,255,0.2);border-radius:999px;transition:all 0.2s; }
+    nav a:hover,nav a.active { color:#fff;border-color:var(--pink-soft);background:rgba(244,114,182,0.1); }
+
+    .hero { position:relative;z-index:5;text-align:center;padding:70px 20px 40px; }
+    .hero-badge { display:inline-block;font-size:0.72rem;font-weight:bold;letter-spacing:2px;
+      text-transform:uppercase;color:var(--pink-soft);border:1px solid rgba(244,114,182,0.4);
+      border-radius:999px;padding:5px 16px;margin-bottom:24px; }
+    h1 { font-size:clamp(2.5rem,7vw,5rem);font-weight:900;line-height:1.05;letter-spacing:-1px; }
+    h1 span { color:var(--pink-soft); }
+    .subtitle { margin-top:14px;font-size:1rem;color:rgba(255,255,255,0.55); }
+
+    /* SEARCH */
+    .search-section { position:relative;z-index:10;padding:10px 20px 0; }
+    .search-wrap { max-width:680px;margin:0 auto;background:var(--glass-b);
+      border:1px solid rgba(255,255,255,0.22);border-radius:18px;padding:6px 6px 6px 20px;
+      display:flex;align-items:center;gap:10px;backdrop-filter:blur(16px);
+      box-shadow:0 8px 40px rgba(0,0,0,0.3);transition:border-color 0.2s,box-shadow 0.2s; }
+    .search-wrap:focus-within { border-color:var(--pink-soft);box-shadow:0 8px 40px rgba(219,39,119,0.22); }
+    #pesquisa { flex:1;background:none;border:none;outline:none;color:#fff;
+      font-family:Arial,Helvetica,sans-serif;font-size:1rem;padding:10px 0; }
+    #pesquisa::placeholder { color:rgba(255,255,255,0.4); }
+    #botao { background:linear-gradient(135deg,var(--purple),var(--pink));border:none;border-radius:12px;
+      padding:12px 22px;cursor:pointer;color:#fff;font-family:Arial,Helvetica,sans-serif;
+      font-weight:bold;font-size:0.88rem;display:flex;align-items:center;gap:8px;
+      transition:opacity 0.2s,transform 0.1s;white-space:nowrap; }
+    #botao:hover { opacity:0.9;transform:scale(1.02); }
+    #botao svg { width:15px;height:15px; }
+    #sugestoes { max-width:680px;margin:6px auto 0;background:rgba(12,10,30,0.97);
+      border:1px solid rgba(255,255,255,0.13);border-radius:14px;overflow:hidden;
+      backdrop-filter:blur(20px);display:none;max-height:340px;overflow-y:auto; }
+    .sugestao-item { padding:13px 20px;cursor:pointer;display:flex;align-items:center;gap:14px;transition:background 0.15s; }
+    .sugestao-item:hover { background:rgba(255,255,255,0.07); }
+    .sug-sigla { font-weight:900;font-size:0.82rem;letter-spacing:1px;color:var(--pink-soft);min-width:62px; }
+    .sug-nome { color:rgba(255,255,255,0.75);font-size:0.88rem; }
+    .sug-prov { font-size:0.72rem;color:rgba(255,255,255,0.4);margin-left:auto;white-space:nowrap; }
+    .sugestao-divider { height:1px;background:rgba(255,255,255,0.07); }
+    #inf { max-width:680px;margin:12px auto 0;text-align:center;font-size:0.9rem;color:var(--pink-soft);min-height:20px; }
+
+    /* FILTERS */
+    .filters-section { position:relative;z-index:8;padding:24px 20px 0;max-width:1100px;margin:0 auto; }
+    .filters-row { display:flex;gap:10px;flex-wrap:wrap;align-items:center; }
+    .filter-label { font-size:0.7rem;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,0.4);margin-right:6px; }
+    .filter-btn { font-size:0.8rem;padding:7px 16px;border-radius:999px;border:1px solid rgba(255,255,255,0.18);
+      color:rgba(255,255,255,0.6);background:none;cursor:pointer;transition:all 0.2s;font-family:inherit; }
+    .filter-btn:hover { border-color:rgba(244,114,182,0.5);color:#fff; }
+    .filter-btn.active { background:rgba(244,114,182,0.15);border-color:var(--pink-soft);color:var(--pink-soft); }
+    .filter-select { font-size:0.8rem;padding:7px 30px 7px 14px;border-radius:999px;
+      border:1px solid rgba(255,255,255,0.18);color:rgba(255,255,255,0.7);
+      background:rgba(255,255,255,0.06);cursor:pointer;outline:none;font-family:inherit;
+      appearance:none;-webkit-appearance:none; }
+    .filter-select option { background:#1e1b4b;color:#fff; }
+
+    /* RANKING BAR */
+    .ranking-bar { position:relative;z-index:5;max-width:1100px;margin:32px auto 0;padding:0 24px; }
+    .ranking-title { font-size:0.7rem;letter-spacing:3px;text-transform:uppercase;color:rgba(255,255,255,0.35);margin-bottom:14px; }
+    .ranking-scroll { display:flex;gap:12px;overflow-x:auto;padding-bottom:8px;scrollbar-width:none; }
+    .ranking-scroll::-webkit-scrollbar { display:none; }
+    .rank-card { background:var(--glass);border:1px solid rgba(255,255,255,0.11);border-radius:16px;
+      padding:16px 20px;min-width:160px;backdrop-filter:blur(10px);flex-shrink:0;position:relative;cursor:pointer;
+      text-decoration:none;color:#fff;transition:transform 0.2s,border-color 0.2s; }
+    .rank-card:hover { transform:translateY(-3px);border-color:rgba(244,114,182,0.35); }
+    .rank-num { position:absolute;top:12px;right:14px;font-size:0.7rem;color:rgba(255,255,255,0.3);font-weight:900; }
+    .rank-score { font-size:1.4rem;font-weight:900;color:var(--pink-soft); }
+    .rank-sigla { font-size:0.92rem;font-weight:900;margin-top:4px; }
+    .rank-nome { font-size:0.72rem;color:rgba(255,255,255,0.5);margin-top:2px;line-height:1.3; }
+
+    /* CARDS GRID */
+    .cards-section { position:relative;z-index:5;padding:40px 24px 20px;max-width:1100px;margin:0 auto; }
+    .section-header { display:flex;align-items:center;justify-content:space-between;margin-bottom:18px; }
+    .section-label { font-size:0.7rem;letter-spacing:3px;text-transform:uppercase;color:rgba(255,255,255,0.35); }
+    .section-count { font-size:0.8rem;color:rgba(255,255,255,0.3); }
+    .cards-grid { display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:14px; }
+    .school-card { background:var(--glass);border:1px solid rgba(255,255,255,0.11);border-radius:18px;
+      padding:22px;text-decoration:none;color:#fff;
+      transition:transform 0.2s,background 0.2s,border-color 0.2s;backdrop-filter:blur(10px);display:flex;flex-direction:column; }
+    .school-card:hover { transform:translateY(-4px);background:rgba(255,255,255,0.11);border-color:rgba(244,114,182,0.4); }
+    .card-sigla { font-weight:900;font-size:1.4rem;letter-spacing:1px;color:var(--pink-soft);margin-bottom:6px; }
+    .card-name { font-size:0.78rem;color:rgba(255,255,255,0.55);line-height:1.4;flex:1; }
+    .card-prov { font-size:0.68rem;color:rgba(255,255,255,0.3);margin-top:6px; }
+    .card-tag { display:inline-block;margin-top:10px;font-size:0.68rem;letter-spacing:1px;text-transform:uppercase;
+      color:rgba(244,114,182,0.75);border:1px solid rgba(244,114,182,0.28);border-radius:999px;padding:3px 10px; }
+    .card-rank { display:flex;align-items:center;gap:4px;margin-top:8px; }
+    .card-rank-bar { height:3px;border-radius:2px;background:linear-gradient(90deg,var(--purple),var(--pink));flex:1; }
+    .card-rank-val { font-size:0.68rem;color:rgba(255,255,255,0.35);white-space:nowrap; }
+
+    /* NO RESULTS */
+    #sem-resultado { display:none;text-align:center;padding:60px 20px; }
+    #sem-resultado p { color:rgba(255,255,255,0.4);font-size:1rem; }
+
+    /* AI CHAT BUTTON */
+    .ai-fab { position:fixed;bottom:28px;right:28px;z-index:100;
+      background:linear-gradient(135deg,var(--purple),var(--pink));
+      border:none;border-radius:50%;width:58px;height:58px;cursor:pointer;
+      display:flex;align-items:center;justify-content:center;
+      box-shadow:0 8px 32px rgba(219,39,119,0.45);transition:transform 0.2s,box-shadow 0.2s; }
+    .ai-fab:hover { transform:scale(1.08);box-shadow:0 12px 40px rgba(219,39,119,0.6); }
+    .ai-fab svg { width:26px;height:26px; }
+    .ai-fab .ai-pulse { position:absolute;top:0;right:0;width:14px;height:14px;
+      background:var(--pink-soft);border-radius:50%;border:2px solid #0f172a;animation:pulse 2s infinite; }
+    @keyframes pulse { 0%,100%{transform:scale(1);}50%{transform:scale(1.2);} }
+
+    /* AI PANEL */
+    .ai-panel { position:fixed;bottom:96px;right:28px;z-index:100;
+      width:360px;max-height:520px;background:rgba(12,10,30,0.97);
+      border:1px solid rgba(255,255,255,0.15);border-radius:24px;
+      backdrop-filter:blur(30px);box-shadow:0 20px 60px rgba(0,0,0,0.6);
+      display:none;flex-direction:column;overflow:hidden; }
+    .ai-panel.open { display:flex; }
+    .ai-panel-header { padding:18px 20px;border-bottom:1px solid rgba(255,255,255,0.08);
+      display:flex;align-items:center;gap:12px; }
+    .ai-avatar { width:38px;height:38px;border-radius:12px;
+      background:linear-gradient(135deg,var(--purple),var(--pink));
+      display:flex;align-items:center;justify-content:center;flex-shrink:0; }
+    .ai-avatar svg { width:20px;height:20px; }
+    .ai-title { font-weight:900;font-size:0.92rem; }
+    .ai-subtitle { font-size:0.72rem;color:rgba(255,255,255,0.4); }
+    .ai-close { margin-left:auto;background:none;border:none;color:rgba(255,255,255,0.5);
+      cursor:pointer;font-size:1.2rem;line-height:1;padding:4px; }
+    .ai-messages { flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:12px;scrollbar-width:thin; }
+    .ai-msg { max-width:85%;font-size:0.87rem;line-height:1.5;padding:10px 14px;border-radius:16px; }
+    .ai-msg.bot { background:rgba(255,255,255,0.08);color:rgba(255,255,255,0.85);align-self:flex-start;border-bottom-left-radius:4px; }
+    .ai-msg.user { background:linear-gradient(135deg,var(--purple),var(--pink));color:#fff;align-self:flex-end;border-bottom-right-radius:4px; }
+    .ai-msg.typing { opacity:0.6; }
+    .ai-chips { display:flex;gap:6px;flex-wrap:wrap;padding:0 16px 12px; }
+    .ai-chip { font-size:0.72rem;padding:5px 12px;border-radius:999px;
+      border:1px solid rgba(244,114,182,0.3);color:rgba(244,114,182,0.8);
+      background:none;cursor:pointer;font-family:inherit;transition:all 0.2s; }
+    .ai-chip:hover { background:rgba(244,114,182,0.1);border-color:var(--pink-soft);color:var(--pink-soft); }
+    .ai-input-row { padding:12px 16px 16px;border-top:1px solid rgba(255,255,255,0.08);display:flex;gap:8px; }
+    .ai-input { flex:1;background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.12);
+      border-radius:12px;padding:10px 14px;color:#fff;font-family:inherit;font-size:0.87rem;outline:none; }
+    .ai-input:focus { border-color:rgba(244,114,182,0.4); }
+    .ai-input::placeholder { color:rgba(255,255,255,0.3); }
+    .ai-send { background:linear-gradient(135deg,var(--purple),var(--pink));border:none;
+      border-radius:10px;padding:10px 14px;cursor:pointer;color:#fff;flex-shrink:0; }
+    .ai-send svg { width:16px;height:16px; }
+
+    footer { position:relative;z-index:5;text-align:center;padding:20px 20px 44px; }
+    footer p { color:rgba(255,255,255,0.3);font-size:0.8rem; }
+    footer a { color:rgba(255,255,255,0.45);font-size:0.83rem;text-decoration:none;
+      border-bottom:1px solid rgba(255,255,255,0.18);padding-bottom:2px; }
+    footer a:hover { color:var(--pink-soft);border-color:var(--pink-soft); }
+
+    @media (max-width:600px) {
+      header { padding:16px 20px; }
+      .hero { padding:40px 16px 24px; }
+      .cards-grid { grid-template-columns:repeat(2,1fr); }
+      .ai-panel { width:calc(100vw - 32px);right:16px;bottom:90px; }
+      .filters-row { gap:6px; }
+      nav a { padding:6px 12px;font-size:0.8rem; }
+    }
+  </style>
+</head>
+<body>
+  <div class="blob blob-1"></div>
+  <div class="blob blob-2"></div>
+  <div class="blob blob-3"></div>
+
+  <header>
+    <a class="logo" href="index.html">MAP<span>SCHOOL</span></a>
+    <nav>
+      <a href="index.html" class="active">Início</a>
+      <a href="rankings.html">Rankings</a>
+      <a href="sobre/sobre.html">Sobre</a>
+    </nav>
+  </header>
+
+  <section class="hero">
+    <div class="hero-badge">Plataforma Nacional · Angola</div>
+    <h1>Encontre sua<br><span>Instituição</span></h1>
+    <p class="subtitle">Escolas e universidades de todas as províncias de Angola</p>
+  </section>
+
+  <section class="search-section">
+    <div class="search-wrap">
+      <input id="pesquisa" type="text" placeholder="Ex: ITEL, Medicina, Engenharia, Benguela…" autocomplete="off">
+      <button id="botao">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+        Pesquisar
+      </button>
+    </div>
+    <div id="sugestoes"></div>
+    <div id="inf"></div>
+  </section>
+
+  <section class="filters-section">
+    <div class="filters-row">
+      <span class="filter-label">Tipo:</span>
+      <button class="filter-btn active" data-tipo="">Todos</button>
+      <button class="filter-btn" data-tipo="escola">Escolas</button>
+      <button class="filter-btn" data-tipo="universidade">Universidades</button>
+      <span class="filter-label" style="margin-left:12px">Província:</span>
+      <select id="filtro-prov" class="filter-select">
+        <option value="">Todas as Províncias</option>
+      </select>
+    </div>
+  </section>
+
+  <section class="ranking-bar">
+    <p class="ranking-title">Top Instituições</p>
+    <div class="ranking-scroll" id="ranking-scroll"></div>
+  </section>
+
+  <section class="cards-section" id="escola-section">
+    <div class="section-header">
+      <p class="section-label" id="section-label-escola">Escolas e Institutos</p>
+      <span class="section-count" id="count-escola"></span>
+    </div>
+    <div class="cards-grid" id="grid-escolas"></div>
+  </section>
+
+  <section class="cards-section" id="univ-section">
+    <div class="section-header">
+      <p class="section-label" id="section-label-univ">Universidades</p>
+      <span class="section-count" id="count-univ"></span>
+    </div>
+    <div class="cards-grid" id="grid-univs"></div>
+  </section>
+
+  <div id="sem-resultado">
+    <p>Nenhuma instituição encontrada para os filtros seleccionados.</p>
+  </div>
+
+  <footer>
+    <p style="margin-bottom:8px">Cobre 18 províncias de Angola · <span id="total-inst"></span> instituições cadastradas</p>
+    <a href="sobre/sobre.html">Sobre o MapSchool</a>
+  </footer>
+
+  <!-- AI FAB -->
+  <button class="ai-fab" id="ai-fab" title="Assistente IA">
+    <div class="ai-pulse"></div>
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+      <circle cx="9" cy="10" r="1" fill="currentColor" stroke="none"/>
+      <circle cx="12" cy="10" r="1" fill="currentColor" stroke="none"/>
+      <circle cx="15" cy="10" r="1" fill="currentColor" stroke="none"/>
+    </svg>
+  </button>
+
+  <!-- AI PANEL -->
+  <div class="ai-panel" id="ai-panel">
+    <div class="ai-panel-header">
+      <div class="ai-avatar">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M12 2a2 2 0 0 1 2 2c0 .74-.4 1.39-1 1.73V7h1a7 7 0 0 1 7 7h1a1 1 0 0 1 1 1v3a1 1 0 0 1-1 1h-1v1a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-1H2a1 1 0 0 1-1-1v-3a1 1 0 0 1 1-1h1a7 7 0 0 1 7-7h1V5.73c-.6-.34-1-.99-1-1.73a2 2 0 0 1 2-2z"/>
+          <circle cx="9" cy="14" r="1" fill="currentColor" stroke="none"/>
+          <circle cx="15" cy="14" r="1" fill="currentColor" stroke="none"/>
+        </svg>
+      </div>
+      <div>
+        <div class="ai-title">Assistente MapSchool</div>
+        <div class="ai-subtitle">IA · Pronto para ajudar</div>
+      </div>
+      <button class="ai-close" id="ai-close">✕</button>
+    </div>
+    <div class="ai-messages" id="ai-messages">
+      <div class="ai-msg bot">Olá! Sou o assistente do MapSchool. Posso ajudar-te a encontrar escolas, universidades, cursos e dar recomendações personalizadas em Angola. O que precisas?</div>
+    </div>
+    <div class="ai-chips" id="ai-chips">
+      <button class="ai-chip" onclick="sendChip('Qual a melhor universidade pública em Angola?')">Melhor universidade pública</button>
+      <button class="ai-chip" onclick="sendChip('Quais escolas têm cursos de Informática?')">Cursos de Informática</button>
+      <button class="ai-chip" onclick="sendChip('Recomenda-me escolas em Benguela')">Escolas em Benguela</button>
+    </div>
+    <div class="ai-input-row">
+      <input class="ai-input" id="ai-input" placeholder="Pergunta sobre escolas, cursos…" autocomplete="off">
+      <button class="ai-send" id="ai-send">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+      </button>
+    </div>
+  </div>
+
+  <script src="data.js"></script>
+  <script>
+    // ---- INIT ----
+    const input      = document.getElementById('pesquisa');
+    const botao      = document.getElementById('botao');
+    const inf        = document.getElementById('inf');
+    const sugestoes  = document.getElementById('sugestoes');
+    const gridE      = document.getElementById('grid-escolas');
+    const gridU      = document.getElementById('grid-univs');
+    const provSelect = document.getElementById('filtro-prov');
+
+    let filtroTipo = '';
+    let filtroProv = '';
+    let textoAtual = '';
+
+    // Populate provinces dropdown
+    PROVINCIAS.forEach(p => {
+      const o = document.createElement('option');
+      o.value = p; o.textContent = p;
+      provSelect.appendChild(o);
+    });
+
+    document.getElementById('total-inst').textContent = INSTITUICOES.length;
+
+    // ---- RENDER RANKING ----
+    function renderRanking() {
+      const top = getTopRanking('', 10);
+      document.getElementById('ranking-scroll').innerHTML = top.map((e,i) => `
+        <a class="rank-card" href="${e.url||'#'}">
+          <span class="rank-num">#${i+1}</span>
+          <div class="rank-score">${e.ranking}</div>
+          <div class="rank-sigla">${e.sigla}</div>
+          <div class="rank-nome">${e.nome.length>40?e.nome.slice(0,38)+'…':e.nome}</div>
+        </a>`).join('');
+    }
+    renderRanking();
+
+    // ---- RENDER CARDS ----
+    function makeCard(e) {
+      const pct = e.ranking + '%';
+      return `<a class="school-card" href="${e.url||'#'}">
+        <div class="card-sigla">${e.sigla}</div>
+        <div class="card-name">${e.nome}</div>
+        <div class="card-prov">${e.provincia}</div>
+        <span class="card-tag">${e.area}</span>
+        <div class="card-rank">
+          <div class="card-rank-bar" style="width:${pct}"></div>
+          <span class="card-rank-val">${e.ranking}pt</span>
+        </div>
+      </a>`;
+    }
+
+    function renderCards() {
+      const res = pesquisarInstituicoes({ texto:textoAtual, provincia:filtroProv, tipo:filtroTipo });
+      const escolas = res.filter(e => e.tipo === 'escola');
+      const univs   = res.filter(e => e.tipo === 'universidade');
+
+      document.getElementById('escola-section').style.display = (filtroTipo==='universidade'||escolas.length===0) ? 'none':'block';
+      document.getElementById('univ-section').style.display   = (filtroTipo==='escola'||univs.length===0)   ? 'none':'block';
+      document.getElementById('sem-resultado').style.display  = res.length===0 ? 'block':'none';
+
+      gridE.innerHTML = escolas.map(makeCard).join('');
+      gridU.innerHTML = univs.map(makeCard).join('');
+
+      const labelE = filtroProv ? `Escolas em ${filtroProv}` : 'Escolas e Institutos';
+      const labelU = filtroProv ? `Universidades em ${filtroProv}` : 'Universidades em Angola';
+      document.getElementById('section-label-escola').textContent = labelE;
+      document.getElementById('section-label-univ').textContent   = labelU;
+      document.getElementById('count-escola').textContent = escolas.length ? `${escolas.length} encontradas` : '';
+      document.getElementById('count-univ').textContent   = univs.length   ? `${univs.length} encontradas`   : '';
+    }
+    renderCards();
+
+    // ---- SEARCH SUGGESTIONS ----
+    function renderSugestoes(lista) {
+      if (!lista.length) { sugestoes.style.display='none'; return; }
+      sugestoes.innerHTML = lista.slice(0,8).map((e,i,arr) =>
+        `<div class="sugestao-item" onclick="location.href='${e.url||'#'}'">
+          <span class="sug-sigla">${e.sigla}</span>
+          <span class="sug-nome">${e.nome}</span>
+          <span class="sug-prov">${e.provincia}</span>
+        </div>${i<arr.length-1?'<div class="sugestao-divider"></div>':''}`
+      ).join('');
+      sugestoes.style.display = 'block';
+    }
+
+    function pesquisar() {
+      const t = input.value.trim();
+      if (!t) { inf.innerHTML='Digite o nome de uma instituição.'; return; }
+      textoAtual = t;
+      const res = pesquisarInstituicoes({ texto:t, provincia:filtroProv, tipo:filtroTipo });
+      if (res.length === 1 && res[0].url && res[0].url !== '#') { location.href = res[0].url; return; }
+      if (res.length > 1) { inf.innerHTML=`${res.length} resultado(s) encontrado(s):`; renderSugestoes(res); }
+      else { inf.innerHTML=`Nenhum resultado para "<strong>${t}</strong>".`; sugestoes.style.display='none'; }
+      renderCards();
+    }
+
+    input.addEventListener('input', () => {
+      textoAtual = input.value.trim();
+      const r = pesquisarInstituicoes({ texto:textoAtual, provincia:filtroProv, tipo:filtroTipo });
+      renderSugestoes(r);
+      renderCards();
+      inf.innerHTML = '';
+    });
+    input.addEventListener('keydown', e => { if(e.key==='Enter'){e.preventDefault();pesquisar();} });
+    botao.addEventListener('click', pesquisar);
+    document.addEventListener('click', e => {
+      if(!e.target.closest('.search-wrap')&&!e.target.closest('#sugestoes')) sugestoes.style.display='none';
+    });
+
+    // ---- FILTERS ----
+    document.querySelectorAll('.filter-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        filtroTipo = btn.dataset.tipo;
+        renderCards();
+      });
+    });
+    provSelect.addEventListener('change', () => {
+      filtroProv = provSelect.value;
+      renderCards();
+    });
+/*
+    // ---- AI CHAT ----
+    const aiFab   = document.getElementById('ai-fab');
+    const aiPanel = document.getElementById('ai-panel');
+    const aiClose = document.getElementById('ai-close');
+    const aiInput = document.getElementById('ai-input');
+    const aiSend  = document.getElementById('ai-send');
+    const aiMsgs  = document.getElementById('ai-messages');
+
+    aiFab.addEventListener('click', () => aiPanel.classList.toggle('open'));
+    aiClose.addEventListener('click', () => aiPanel.classList.remove('open'));
+
+    function appendMsg(txt, role) {
+      const div = document.createElement('div');
+      div.className = `ai-msg ${role}`;
+      div.textContent = txt;
+      aiMsgs.appendChild(div);
+      aiMsgs.scrollTop = aiMsgs.scrollHeight;
+      return div;
+    }
+
+    function buildAIContext() {
+      return `És o assistente inteligente do MapSchool, a plataforma nacional de pesquisa de instituições de ensino em Angola.
+Tens acesso a ${INSTITUICOES.length} instituições de 18 províncias de Angola.
+Aqui está um resumo das instituições disponíveis:
+${INSTITUICOES.map(e => `- ${e.sigla} (${e.nome}), ${e.provincia}, ${e.tipo}, cursos: ${e.cursos.slice(0,4).join(', ')}, ranking: ${e.ranking}`).join('\n')}
+
+Responde sempre em Português de Angola (podes usar expressões angolanas). Sê conciso, útil e amigável.
+Ajuda o estudante a encontrar a instituição certa para o seu perfil e interesses.
+Quando recomendares instituições, menciona o nome completo, a sigla e a província.`;
+    }
+
+    
+    // ---- CONVERSATION HISTORY ----
+    const chatHistory = [];
+
+    async function sendMessage(txt) {
+      if (!txt.trim()) return;
+      appendMsg(txt, 'user');
+      aiInput.value = '';
+      const typing = appendMsg('A pensar…', 'bot typing');
+
+      // Add user message to history
+      chatHistory.push({ role: 'user', parts: [{ text: txt }] });
+
+      try {
+        const systemPrompt = buildAIContext();
+        const res = await fetch(GEMINI_API_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            system_instruction: { parts: [{ text: systemPrompt }] },
+            contents: chatHistory,
+            generationConfig: { maxOutputTokens: 800, temperature: 0.7 }
+          })
+        });
+        const data = await res.json();
+        const reply = data?.candidates?.[0]?.content?.parts?.[0]?.text
+          || 'Desculpa, não consegui responder agora.';
+
+        // Add assistant reply to history so next message has full context
+        chatHistory.push({ role: 'model', parts: [{ text: reply }] });
+
+        typing.classList.remove('typing');
+        typing.textContent = reply;
+      } catch(err) {
+        // Remove the failed user message from history on error
+        chatHistory.pop();
+        typing.textContent = 'Erro de ligação. Tenta novamente.';
+        typing.classList.remove('typing');
+      }
+      aiMsgs.scrollTop = aiMsgs.scrollHeight;
+    }
+
+    function sendChip(txt) {
+      aiPanel.classList.add('open');
+      document.getElementById('ai-chips').style.display = 'none';
+      sendMessage(txt);
+    }
+
+    aiSend.addEventListener('click', () => sendMessage(aiInput.value));
+    aiInput.addEventListener('keydown', e => { if(e.key==='Enter') sendMessage(aiInput.value); });*/
+  </script>
+</body>
+</html>

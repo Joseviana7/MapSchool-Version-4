@@ -1,0 +1,157 @@
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --purple:    #7c3aed;
+  --violet:    #6d28d9;
+  --pink:      #db2777;
+  --pink-soft: #f472b6;
+  --white:     #ffffff;
+  --glass:     rgba(255,255,255,0.07);
+  --glass-b:   rgba(255,255,255,0.13);
+}
+
+body {
+  min-height: 100vh;
+  font-family: Arial, Helvetica, sans-serif;
+  color: var(--white);
+  background: linear-gradient(145deg, #0f172a 0%, #1e1b4b 35%, #4c1d95 65%, #831843 100%);
+  background-attachment: fixed;
+}
+
+.blob { position: fixed; border-radius: 50%; filter: blur(80px); opacity: 0.2; pointer-events: none; z-index: 0; }
+.blob-1 { width: 450px; height: 450px; background: #7c3aed; top: -80px; left: -80px; }
+.blob-2 { width: 350px; height: 350px; background: #db2777; bottom: -60px; right: -60px; }
+
+/* Top bar */
+.topbar {
+  position: relative; z-index: 20;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 20px 32px;
+}
+.logo {
+  font-family: Arial, Helvetica, sans-serif;
+  font-weight: 900; font-size: 1.15rem; letter-spacing: 4px;
+  color: #fff; text-decoration: none;
+}
+.logo span { color: var(--pink-soft); }
+.btn-voltar {
+  display: flex; align-items: center; gap: 6px;
+  color: rgba(255,255,255,0.7); text-decoration: none;
+  font-size: 0.88rem; font-weight: bold;
+  padding: 8px 18px; border: 1px solid rgba(255,255,255,0.2);
+  border-radius: 999px; transition: all 0.2s;
+}
+.btn-voltar:hover { color: #fff; border-color: var(--pink-soft); }
+
+/* School hero */
+.school-hero {
+  position: relative; z-index: 5;
+  padding: 50px 32px 40px;
+  max-width: 1000px; margin: 0 auto;
+}
+.school-badge {
+  display: inline-block; font-size: 0.72rem; font-weight: bold;
+  letter-spacing: 2px; text-transform: uppercase;
+  color: var(--pink-soft); border: 1px solid rgba(244,114,182,0.35);
+  border-radius: 999px; padding: 4px 14px; margin-bottom: 16px;
+}
+.school-sigla {
+  font-family: Arial, Helvetica, sans-serif;
+  font-weight: 900;
+  font-size: clamp(3rem, 8vw, 5.5rem); line-height: 1;
+  background: linear-gradient(135deg, #c4b5fd, #f472b6);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  letter-spacing: -1px;
+}
+.school-nome {
+  font-size: clamp(1rem, 2.5vw, 1.3rem);
+  color: rgba(255,255,255,0.7); margin-top: 8px; font-weight: normal;
+}
+
+/* Main content */
+.content {
+  position: relative; z-index: 5;
+  max-width: 1000px; margin: 0 auto;
+  padding: 0 32px 60px;
+  display: grid; grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+
+/* Cards */
+.card {
+  background: var(--glass);
+  border: 1px solid rgba(255,255,255,0.11);
+  border-radius: 20px; padding: 26px;
+  backdrop-filter: blur(12px);
+}
+.card.full { grid-column: 1 / -1; }
+.card-title {
+  font-family: Arial, Helvetica, sans-serif;
+  font-weight: bold;
+  font-size: 0.72rem; letter-spacing: 2px; text-transform: uppercase;
+  color: var(--pink-soft); margin-bottom: 18px;
+  display: flex; align-items: center; gap: 8px;
+}
+.card-title svg { width: 14px; height: 14px; }
+
+/* Courses */
+.area-block { margin-bottom: 20px; }
+.area-block:last-child { margin-bottom: 0; }
+.area-title {
+  font-family: Arial, Helvetica, sans-serif;
+  font-weight: bold;
+  font-size: 0.88rem; color: #c4b5fd;
+  margin-bottom: 8px; padding-left: 2px;
+}
+.curso-list { list-style: none; }
+.curso-list li {
+  padding: 7px 0 7px 16px;
+  border-left: 2px solid rgba(244,114,182,0.25);
+  color: rgba(255,255,255,0.75); font-size: 0.88rem;
+  margin-bottom: 4px; transition: border-color 0.2s, color 0.2s;
+}
+.curso-list li:hover { border-color: var(--pink-soft); color: #fff; }
+
+/* Info items */
+.info-row {
+  display: flex; align-items: flex-start; gap: 12px;
+  padding: 12px 0; border-bottom: 1px solid rgba(255,255,255,0.07);
+}
+.info-row:last-child { border-bottom: none; padding-bottom: 0; }
+.info-icon {
+  width: 34px; height: 34px; flex-shrink: 0;
+  background: rgba(124,58,237,0.25); border-radius: 10px;
+  display: flex; align-items: center; justify-content: center;
+}
+.info-icon svg { width: 16px; height: 16px; stroke: #c4b5fd; }
+.info-label { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 1px; color: rgba(255,255,255,0.4); margin-bottom: 3px; }
+.info-value { font-size: 0.92rem; color: rgba(255,255,255,0.85); }
+
+/* Link saiba mais */
+.btn-mais {
+  display: inline-flex; align-items: center; gap: 8px;
+  background: linear-gradient(135deg, var(--purple), var(--pink));
+  color: #fff; text-decoration: none;
+  font-family: Arial, Helvetica, sans-serif;
+  font-weight: bold; font-size: 0.9rem;
+  padding: 12px 24px; border-radius: 14px;
+  margin-top: 16px; transition: opacity 0.2s, transform 0.15s;
+}
+.btn-mais:hover { opacity: 0.88; transform: translateY(-2px); }
+.btn-mais svg { width: 15px; height: 15px; }
+.btn-disabled { background: rgba(255,255,255,0.1); pointer-events: none; opacity: 0.5; }
+
+/* Map iframe */
+.map-container {
+  border-radius: 16px; overflow: hidden;
+  border: 1px solid rgba(255,255,255,0.1);
+  height: 280px;
+}
+.map-container iframe { width: 100%; height: 100%; border: none; display: block; }
+
+@media (max-width: 700px) {
+  .topbar { padding: 16px 20px; }
+  .school-hero { padding: 36px 20px 28px; }
+  .content { padding: 0 20px 50px; grid-template-columns: 1fr; }
+  .card.full { grid-column: 1; }
+}
